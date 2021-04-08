@@ -106,7 +106,9 @@ def summarize_best_books(filepath):
     ("Fiction", "The Testaments (The Handmaid's Tale, #2)", "https://www.goodreads.com/choiceawards/best-fiction-books-2020")
     to your list of tuples.
     """
-    soup = BeautifulSoup(open("/Users/akshaysaxena/Desktop/SI206/projects/p2/wn2021-project2-akshaysaxena35/best_books_2020.htm"), 'html.parser')
+    root_path = os.path.dirname(os.path.abspath(__file__))
+    fullfilename = os.path.join(root_path, filepath)
+    soup = BeautifulSoup(open(fullfilename), 'html.parser')
 
     genre_list = soup.find('div', {'class':'categoryContainer'}).find_all('h4', {'class':'category__copy'})
     title_list = soup.find('div', {'class':'categoryContainer'}).find_all('img', {'class':'category__winnerImage'}, alt=True)
@@ -190,6 +192,8 @@ class TestCases(unittest.TestCase):
         # check that each URL in the TestCases.search_urls is a string
         self.assertEqual(type(self.search_urls[0]), type(""))
         # check that each URL contains the correct url for Goodreads.com followed by /book/show/
+        for url in self.search_urls:
+            self.assertTrue(url.startswith("https://www.goodreads.com/book/show/"))
 
     def test_get_book_summary(self):
         # create a local variable – summaries – a list containing the results from get_book_summary()
@@ -213,34 +217,40 @@ class TestCases(unittest.TestCase):
 
     def test_summarize_best_books(self):
         # call summarize_best_books and save it to a variable
-        summarize_best_books("best_books_2020")
+        best_books = summarize_best_books("best_books_2020.htm")
         # check that we have the right number of best books (20)
-
+        self.assertEqual(len(best_books), 20)
             # assert each item in the list of best books is a tuple
-
+        self.assertEqual(type(best_books[0]), type((1,2)))
             # check that each tuple has a length of 3
-
+        self.assertEqual(len(best_books[0]), 3)
         # check that the first tuple is made up of the following 3 strings:'Fiction', "The Midnight Library", 'https://www.goodreads.com/choiceawards/best-fiction-books-2020'
-
+        self.assertEqual(best_books[0][0], "Fiction")
+        self.assertEqual(best_books[0][1], "The Midnight Library")
+        self.assertEqual(best_books[0][2], "https://www.goodreads.com/choiceawards/best-fiction-books-2020")
         # check that the last tuple is made up of the following 3 strings: 'Picture Books', 'Antiracist Baby', 'https://www.goodreads.com/choiceawards/best-picture-books-2020'
+        self.assertEqual(best_books[-1][0], "Picture Books")
+        self.assertEqual(best_books[-1][1], "Antiracist Baby")
+        self.assertEqual(best_books[-1][2], "https://www.goodreads.com/choiceawards/best-picture-books-2020")
 
     def test_write_csv(self):
         # call get_titles_from_search_results on search_results.htm and save the result to a variable
         datalist = get_titles_from_search_results("search_results.htm")
         # print(datalist)
         # call write csv on the variable you saved and 'test.csv'
-        write_csv(datalist, "booklist.csv")
+        write_csv(datalist, "test.csv")
         # read in the csv that you wrote (create a variable csv_lines - a list containing all the lines in the csv you just wrote to above)
-
-
+        f = open('test.csv', 'r')
+        csv_lines = f.readlines()
+        f.close()
         # check that there are 21 lines in the csv
-
+        self.assertEqual(len(csv_lines), 21)
         # check that the header row is correct
-
+        self.assertEqual(str.strip(csv_lines[0]), "Book title,Author Name")
         # check that the next row is 'Harry Potter and the Deathly Hallows (Harry Potter, #7)', 'J.K. Rowling'
-
+        self.assertEqual(str.strip(csv_lines[1]), "\"Harry Potter and the Deathly Hallows (Harry Potter, #7)\",J.K. Rowling")
         # check that the last row is 'Harry Potter: The Prequel (Harry Potter, #0.5)', 'J.K. Rowling'
-
+        self.assertEqual(str.strip(csv_lines[-1]), "\"Harry Potter: The Prequel (Harry Potter, #0.5)\",J.K. Rowling")
 
 if __name__ == '__main__':
     print(extra_credit("extra_credit.htm"))
