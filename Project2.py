@@ -181,9 +181,10 @@ class TestCases(unittest.TestCase):
         # check that each item in the list is a tuple
         self.assertEqual(type(titles_list[0]), type((1, 2)))
         # check that the first book and author tuple is correct (open search_results.htm and find it)
-
+        self.assertEqual(titles_list[0][0], "Harry Potter and the Deathly Hallows (Harry Potter, #7)")
+        self.assertEqual(titles_list[0][1], "J.K. Rowling")
         # check that the last title is correct (open search_results.htm and find it)
-
+        self.assertEqual(titles_list[-1][0], "Harry Potter: The Prequel (Harry Potter, #0.5)")
     def test_get_search_links(self):
         # check that TestCases.search_urls is a list
         self.assertEqual(type(self.search_urls), type([]))
